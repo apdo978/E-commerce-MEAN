@@ -26,7 +26,7 @@ app.use(morgan('dev')); // Request logging
 
 // CORS configuration
 app.use(cors({
-    origin: 'https://e-commerce-mean-production.up.railway.app',
+    origin: 'https://apdo978.github.io',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
