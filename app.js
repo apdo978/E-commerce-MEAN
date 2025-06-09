@@ -26,7 +26,7 @@ app.use(morgan('dev')); // Request logging
 
 // CORS configuration
 app.use(cors({
-    origin: 'http://localhost:4200',
+    origin: 'https://e-commerce-mean-production.up.railway.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
