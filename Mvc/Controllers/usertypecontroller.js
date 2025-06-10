@@ -15,7 +15,11 @@ const insertSuperUser =async function (req, res) {
             return res.status(400).json({ status: "fail", data: { data: error.path + " " + error.msg } });
         }
             const newUser = await UsersTypess.find({ _id: req.body.userType })
-            if (newUser.length !== 0) { } else { return res.status(404).json({ status: "fail", data: { data: "invalid Type Token" } }) }
+            
+            if (newUser.length == 0) { 
+               
+
+            } else { return res.status(404).json({ status: "fail", data: { data: "invalid Type Token" } }) }
                      const {  password } = req.body;
                     req.body.password = await encrypt.hash(password, 10)
                     const User = await Users.create(req.body)

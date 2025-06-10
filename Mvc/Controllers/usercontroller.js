@@ -43,11 +43,11 @@ const getAllUsers =async (req, res) => {
     catch (err) {
         res.status(400).json({
             status: "error",
-            "message": "An error occurred",
+            "message":err.message,
             "code": 500,
             "data": {}
         });
-        console.log({ err: err.message });
+    
     }
 }
 
@@ -93,11 +93,11 @@ const DeleteUsers = async function (req, res) {
     catch (err) {
         res.status(400).json({
             status: "error",
-            "message": "An error occurred",
+            "message": err.message,
             "code": 500,
             "data": {}
         });
-        console.log({ err: err.message });
+   
     }
 }
 const EditUsers = async function (req, res) {
@@ -153,11 +153,11 @@ const EditUsers = async function (req, res) {
     catch (err) {
         res.status(500).json({
             status: "error",
-            "message": "An error occurred",
+            "message": err.message,
             "code": 500,
             "data": {}
         });
-        console.log({ err: err.message });
+       
     }
 }
 const loginUser = async (req,res)=>{
@@ -168,6 +168,8 @@ const loginUser = async (req,res)=>{
             return res.status(400).json({ status: "fail", data: { data: error.path + " has " + error.msg } });
         }
         const { email, password } = req.body
+
+        
         let Userchk = await Users.findOne({ email }, {})
         if (Userchk) {
             const hashchk =  await encrypt.compare(password, Userchk.password)
@@ -201,7 +203,7 @@ catch (err) {
                 "field": "sOmthing went wrong"
             }
         })
-    console.log(err) }
+     }
 }
 const verify = (req, res,next) => {
     const token = req.headers['authorization']
@@ -220,6 +222,7 @@ const verify = (req, res,next) => {
             return res.status(401).send('Invalid token');
         }
         req.user = decoded; 
+        
         next();
     });
 }
@@ -229,7 +232,6 @@ const isAdmin = async (req,res,next)=>{
     if (req.user!=undefined){
         
         try{
-            console.log(req.user);
             
             if (req.body.ObjectId !== undefined || req.query.ObjectId !== null){
                
@@ -275,7 +277,88 @@ else{
 
     
 }//require jwt verify
-module.exports = { insertUser, getAllUsers, EditUsers, loginUser, verify, isAdmin}
+const updateProfile = async (req, res) => {
+    try {
+        const { name: newName, email: newEmail , newPassword: newPassword, password: password } = req.body;
+        
+        // Get user from token
+        let { name,email  } = req.user;
+
+
+        // Find user by email (unique identifier)
+        const user = await Users.findOne({ email, name });
+        if (!user) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "User not found" }
+            });
+        }
+        else if(
+            name == newName && email == newEmail && newPassword == password ||
+            name == newName && email == newEmail && newPassword ==''
+        ){
+            return res.status(400).json({
+                status: "fail",
+                data: { message: "Same Inputs" }
+            });
+        }
+
+        // If password is provided, verify it
+        if (password) {
+        
+            const isValidPassword = await encrypt.compare(password, user.password);
+            
+            if (!isValidPassword) {
+                return res.status(400).json({
+                    status: "fail",
+                    data: { message: "Current password is incorrect" }
+                });
+            }
+        }
+        
+
+        // Update user data
+        let updates = {};
+        if (newName) updates.name = newName;
+        if (newEmail) updates.email = newEmail;
+        if (newPassword) {
+            updates.password = await encrypt.hash(newPassword, 10);
+        }
+    ;
+
+        // Update user
+        const updatedUser = await Users.findByIdAndUpdate(
+            user._id,
+            { $set: updates },
+            { new: true, select: '-password' }
+        );
+         name  = updatedUser.name;
+        email = updatedUser.email;
+        const iat = req.user.iat       
+        // Create new JWT token with updated user data
+
+       newToken = jwt.sign({ name, email, iat }, secret_key)
+
+     
+
+        return res.status(200).json({
+            status: "success",
+            data: {
+                user: { name, email },
+                token: newToken
+            }
+        });
+
+    } catch (error) {
+        console.error('Profile update error:', error);
+        return res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
+};
+
+module.exports = { insertUser, getAllUsers, EditUsers, loginUser, verify, isAdmin, updateProfile}
 /*{
             status: "success", data: {
                 data: `New User Has Been Created Succfully ${newUser.name}` } } */

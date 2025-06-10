@@ -105,6 +105,7 @@ router.post('/', verify, asyncwrapper(async (req, res) => {
             }];
             
             cart = await cartsCollection.create({
+                id: Date.now(), 
                 name,
                 email,
                 products: products,

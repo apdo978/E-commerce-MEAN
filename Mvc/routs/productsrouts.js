@@ -1,6 +1,6 @@
 const express = require('express');
 const routes = express.Router()
-const { insertProduct, getAllProducts, UsersCart } =require('../Controllers/productcontroller.js')
+const { insertProduct, getAllProducts, UsersCart, updateOrderStatus } =require('../Controllers/productcontroller.js')
 const { isAdmin } =require('../Controllers/usercontroller.js')
 const cartsCollection = require('../models/CartModel')
 const productsvalidator = require('../validators/producvalidator.js');
@@ -12,6 +12,8 @@ routes.get('/getAllProducts', /*verify,/*isAdmin,*/ asyncwrapper(getAllProducts)
 routes.post('/insertProduct', verify, isAdmin, productsvalidator.insertproductsvalidator, asyncwrapper(insertProduct))
 // routes.delete('/deleteProduct',productsvalidator.deleteproductsvalidator, deleteProduct)
 routes.post('/order', verify, productsvalidator.Cartsvalidator,asyncwrapper(UsersCart))
+routes.patch('/order/:orderId', verify, asyncwrapper(updateOrderStatus))
+
 routes.get('/lastOrders', verify,asyncwrapper(async (req,res)=>{
     try{
         if (typeof req.user == "string") {
@@ -25,9 +27,9 @@ routes.get('/lastOrders', verify,asyncwrapper(async (req,res)=>{
             res.json({data:orders})
         }else{
             const {name,email} = req.user
-            const orders = await cartsCollection.find({ name,email }, { _id: false })
-
-            res.json( orders )
+            let orders = await cartsCollection.find({ name,email })
+            orders = orders.filter((orders, i, arr) => { return i % 2 === 0 }) 
+            res.json(orders )
 
         }
         }

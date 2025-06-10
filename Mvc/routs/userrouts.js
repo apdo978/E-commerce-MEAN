@@ -1,6 +1,14 @@
 const express = require('express')
 const routes = express.Router()
-const { insertUser, getAllUsers, EditUsers, loginUser, verify, isAdmin } = require('../Controllers/usercontroller')
+const { 
+    insertUser, 
+    getAllUsers, 
+    EditUsers, 
+    loginUser, 
+    verify, 
+    isAdmin,
+    updateProfile 
+} = require('../Controllers/usercontroller')
 const userValidatore = require('../validators/uservalidator')
 const asyncwrapper = require('../utilis/asyncwrapper')
 // Crud USER
@@ -18,5 +26,12 @@ routes.get("/GetAllUserS", verify, isAdmin, getAllUsers)
 //or not and can cancel users order and retrive db products balance 
 
 routes.patch("/EditUsers", verify, isAdmin, userValidatore.editUserValidator, EditUsers)
+
+// Update user profile (protected route)
+routes.patch("/profile", 
+    verify, 
+  userValidatore.editUserValidator, 
+    asyncwrapper(updateProfile)
+);
 
 module.exports = routes

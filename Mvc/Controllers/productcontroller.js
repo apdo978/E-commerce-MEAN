@@ -1,7 +1,7 @@
 const productsCollection = require('../models/productsmodel')
 const cartsCollection = require('../models/CartModel')
 const { validationResult, body } = require('express-validator')
-exports.insertProduct = async function (req, res) {
+const insertProduct = async function (req, res) {
     try {
         const result = validationResult(req)
         if (!result.isEmpty()) {
@@ -27,7 +27,7 @@ exports.insertProduct = async function (req, res) {
         console.log({ err: err.message });
     }
 }
-exports.getAllProducts =async (req, res) => {
+const getAllProducts =async (req, res) => {
     try {
         const Products = await productsCollection.find({}, { _id: false, __v: false, createdAt: false, updatedAt:false})
         res.status(200).json({
@@ -82,7 +82,7 @@ exports.getAllProducts =async (req, res) => {
 //         console.log({ err: err.message });
 //     }
 // }
-exports.UsersCart = async (req, res,next) => {//new functionalty added
+const UsersCart = async (req, res,next) => {//new functionalty added
     try{
     const result = validationResult(req)
     if (!result.isEmpty()) {
@@ -92,7 +92,6 @@ exports.UsersCart = async (req, res,next) => {//new functionalty added
     const { name, email } = req.user//name , email 
     let flag = 1
         order = { name, email, products: req.body, isOrder: true } 
-        let ids = []
            for (let i = 0; i < req.body.length; i++) {
                let datbal = await productsCollection.updateOne({ id: req.body[i].id, avilable:true, $expr: { $gte: ["$qunt", req.body[i].total || 0] } }, { $inc: { qunt :-req.body[i].total||0}})
                if (datbal.modifiedCount == 0 && datbal.matchedCount == 0){
@@ -107,6 +106,12 @@ exports.UsersCart = async (req, res,next) => {//new functionalty added
         if (existingCart) {
             existingCart.isOrder = true;
             await existingCart.save();
+            return res.status(200).json({
+                status: "success",
+                data: {
+                    data: "Your order has been placed successfully."
+                }
+            });
         }
         
         // Create a new order
@@ -135,3 +140,56 @@ exports.UsersCart = async (req, res,next) => {//new functionalty added
         });
     }
 }
+
+const updateOrderStatus = async (req, res) => {
+
+    const orderId  = Number(req.params.orderId)
+    const { status } = req.body;
+    console.log(orderId);
+ 
+    // Validate status value
+    const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+            status: "error",
+            message: "Invalid status value",
+            code: 400
+        });
+    }
+
+    try {
+        const updatedOrder = await cartsCollection.findOneAndUpdate(  {id:orderId},
+            { status },
+            { new: true }
+        );
+        console.log(updatedOrder);
+
+        if (!updatedOrder) {
+            return res.status(404).json({
+                status: "error",
+                message: "Order not found",
+                code: 404
+            });
+        }
+
+        res.json({
+            status: "success",
+            message: "Order status updated successfully",
+            data: updatedOrder
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: "error",
+            message: "Failed to update order status",
+            code: 500,
+            data: { error: error.message }
+        });
+    }
+};
+
+module.exports = {
+    insertProduct,
+    getAllProducts,
+    UsersCart,
+    updateOrderStatus
+};

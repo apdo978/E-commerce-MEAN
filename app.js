@@ -24,13 +24,23 @@ const API_PREFIX = `/api/${API_VERSION}`;
 app.use(express.json());
 app.use(morgan('dev')); // Request logging
 
+const allowedOrigins = [
+    'https://apdo978.github.io',
+    'http://localhost:4200',
+];
 // CORS configuration
-app.use(cors({
-    origin: 'https://apdo978.github.io',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+app.use(cors(
+    {
+        origin: function (origin, callback) {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+    }));
 // Rate limiting
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
@@ -49,9 +59,9 @@ const uploadsDir = path.join(__dirname, "Mvc/assets");
 app.get(`${API_PREFIX}/uploads`, (req, res) => {
     fs.readdir(uploadsDir, (err, files) => {
         if (err) {
-            return res.status(500).json({ 
+            return res.status(500).json({
                 status: 'error',
-                message: "Error reading directory" 
+                message: "Error reading directory"
             });
         }
 
@@ -60,9 +70,9 @@ app.get(`${API_PREFIX}/uploads`, (req, res) => {
             url: `${API_PREFIX}/uploads/${file}`
         }));
 
-        res.json({ 
+        res.json({
             status: 'success',
-            data: filesList 
+            data: filesList
         });
     });
 });
@@ -117,10 +127,10 @@ app.all('*', (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    
+
     const statusCode = err.statusCode || 500;
     const status = err.status || 'error';
-    
+
     res.status(statusCode).json({
         status,
         message: err.message,
@@ -129,8 +139,7 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.port || 3000;
-app.listen(PORT, () => { 
+app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`API Version: ${API_VERSION}`);
 });
-
