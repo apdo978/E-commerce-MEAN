@@ -83,9 +83,6 @@ app.get(`${API_PREFIX}/uploads`, (req, res) => {
 
 // Database connection
 connectDB();
-console.log(process.env.session);
-
-console.log(config.session," session config");
 
 app.use(session(config.session));
 app.use(passport.initialize());
