@@ -28,7 +28,6 @@ routes.get('/lastOrders', verify,asyncwrapper(async (req,res)=>{
         }else{
             const {name,email} = req.user
             let orders = await cartsCollection.find({ name,email })
-            orders = orders.filter((orders, i, arr) => { return i % 2 === 0 }) 
             res.json(orders )
 
         }

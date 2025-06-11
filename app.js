@@ -4,6 +4,7 @@ const connectDB = require('./Mvc/config/dbconfig.js');
 const Userroute = require('./Mvc/routs/userrouts.js')
 const productroute = require('./Mvc/routs/productsrouts.js')
 const cartRoutes = require('./Mvc/routs/cartRoutes.js')
+const OAuthRoutes = require('./Mvc/routs/auth.routes.js');
 const routes = express.Router()
 require('dotenv').config({ path: "app.env" })
 const jwt = require('jsonwebtoken')
@@ -15,6 +16,9 @@ const orders = require('./Mvc/routs/adminrouts.js')
 const fs = require("fs");
 const path = require("path");
 const morgan = require('morgan');//logger package
+const session = require('express-session');
+const passport = require('./Mvc/authrization/passport');
+const config = require('./config/oauth.config');
 
 // API Version
 const API_VERSION = 'v1';
@@ -79,6 +83,14 @@ app.get(`${API_PREFIX}/uploads`, (req, res) => {
 
 // Database connection
 connectDB();
+console.log(process.env.session);
+
+console.log(config.session," session config");
+
+app.use(session(config.session));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 // API Routes
 app.use(`${API_PREFIX}/users`, Userroute);
@@ -86,6 +98,7 @@ app.use(`${API_PREFIX}/admins`, orders);
 app.use(`${API_PREFIX}/products`, productroute);
 app.use(`${API_PREFIX}/cart`, cartRoutes);
 app.use(`${API_PREFIX}/user-types`, usertyperoute);
+app.use(`${API_PREFIX}/auth`, OAuthRoutes );
 
 // File upload route
 app.post(`${API_PREFIX}/upload`, upload.array('file', 5), (req, res) => {
@@ -137,6 +150,7 @@ app.use((err, req, res, next) => {
         ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
     });
 });
+
 
 const PORT = process.env.port || 3000;
 app.listen(PORT, () => {

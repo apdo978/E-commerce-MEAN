@@ -1,10 +1,16 @@
 const mong =require("mongoose")
 
 const userSchema = mong.Schema(
-    {name:{type:String,required:true,minlength:4},
-    email:{type:String,required:true, unique:true},
+    {
+        name:{type:String
+            ,required:true
+            ,minlength:4},
+    email:{type:String
+        ,required:true, unique:true},
     password:{type:String,required:true, minlength:8},
-        userType: { type: mong.Schema.Types.ObjectId, ref:'usertype'}
+        userType: { type: mong.Schema.Types.ObjectId, ref:'usertype'},
+        googleId: String,
+        avatar: String
 },{timestamps:true})
 
 module.exports = mong.model('Users', userSchema)
