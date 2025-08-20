@@ -30,6 +30,7 @@ app.use(morgan('dev')); // Request logging
 
 const allowedOrigins = [
     'https://apdo978.github.io',
+    'https://abdelrhman-dev.me',
     'http://localhost:4200',
 ];
 // CORS configuration
