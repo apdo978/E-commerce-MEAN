@@ -1,0 +1,219 @@
+<mat-tab-group>
+  <mat-tab label="Users">
+    <div *ngIf="loadingUsers" class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div>
+    <table mat-table [dataSource]="users" class="mat-elevation-z8" *ngIf="!loadingUsers">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let user">{{ user.name }}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Email</th>
+        <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+      </ng-container>
+      <ng-container matColumnDef="userType">
+        <th mat-header-cell *matHeaderCellDef>User Type</th>
+        <td mat-cell *matCellDef="let user">{{ user.userType&&"admin" || user.userType }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"></tr>
+    </table>
+  </mat-tab>
+  <mat-tab label="Insert Admin">
+    <form [formGroup]="adminForm" (ngSubmit)="insertAdmin()" class="admin-form">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" required />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" required />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="adminForm.invalid">Insert Admin</button>
+      <mat-hint *ngIf="adminInsertSuccess" style="color: green">{{ adminInsertSuccess }}</mat-hint>
+      <mat-hint *ngIf="adminInsertError" style="color: red">{{ adminInsertError }}</mat-hint>
+    </form>
+  </mat-tab>
+  <mat-tab label="Orders">
+    <div *ngIf="loadingOrders" class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div>
+    <div *ngIf="orderError" class="error-message">{{ orderError }}</div>
+    <table mat-table [dataSource]="orders" class="mat-elevation-z8" *ngIf="!loadingOrders && orders.length">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>Customer Name</th>
+        <td mat-cell *matCellDef="let order">{{ order.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>Customer Email</th>
+        <td mat-cell *matCellDef="let order">{{ order.email }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="products">
+        <th mat-header-cell *matHeaderCellDef>Products</th>
+        <td mat-cell *matCellDef="let order">
+          <div class="products-list">
+            <div *ngFor="let product of order.products" class="product-item">
+              <div class="product-content">
+                <div class="product-image">
+                  <img [src]="product.image" 
+                       [alt]="product.title"
+                       loading="lazy" />
+                </div>
+                <div class="product-info">
+                  <span class="product-title">{{ product.title }}</span>
+                  <span class="product-details">
+                    Qty: {{ product.quantity }} × ${{ product.price | number:'1.2-2' }}
+                    = ${{ product.quantity * product.price | number:'1.2-2' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let order">${{ calculateOrderTotal(order.products) | number:'1.2-2' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+        <td mat-cell *matCellDef="let order">
+          <mat-form-field>
+            <mat-select [value]="order.status" (selectionChange)="updateOrderStatus(order.id?.toString(), $event.value)">
+              <mat-option value="pending">Pending</mat-option>
+              <mat-option value="processing">Processing</mat-option>
+              <mat-option value="shipped">Shipped</mat-option>
+              <mat-option value="delivered">Delivered</mat-option>
+              <mat-option value="cancelled">Cancelled</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>Order Date</th>
+        <td mat-cell *matCellDef="let order">{{ formatDate(order.createdAt) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let order">
+          <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Order actions">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="print(order)">
+              <mat-icon>print</mat-icon>
+              <span>Print Order</span>
+            </button>
+            <button mat-menu-item (click)="emailCustomer(order,order.email)">
+              <mat-icon>email</mat-icon>
+              <span>Email Customer</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedOrderColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedOrderColumns;"></tr>
+    </table>
+    <div *ngIf="!loadingOrders && !orders.length" class="no-orders">
+      <mat-icon>shopping_cart</mat-icon>
+      <p>No orders found.</p>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<style>
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 400px;
+  margin: 24px auto;
+}
+.products-list {
+  max-width: 400px;
+}
+
+.product-item {
+  margin-bottom: 12px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.product-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-image {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  flex: 1;
+}
+
+.product-title {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.product-details {
+  display: block;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.error-message {
+  color: red;
+  padding: 16px;
+  text-align: center;
+}
+
+.no-orders {
+  text-align: center;
+  padding: 32px;
+  color: #666;
+}
+
+.no-orders mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+mat-form-field {
+  width: 120px;
+}
+</style> 

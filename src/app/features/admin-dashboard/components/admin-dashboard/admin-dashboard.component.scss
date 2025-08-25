@@ -1,0 +1,67 @@
+/* Admin Dashboard styles */
+:host {
+  display: block;
+  padding: 24px;
+}
+
+.mat-tab-group {
+  @media (max-width: 768px) {
+    .mat-tab-label {
+      padding: 0 12px;
+      min-width: auto;
+    }
+  }
+}
+
+table.mat-table {
+  width: 100%;
+
+  @media (max-width: 768px) {
+    // Stack cells vertically on mobile
+    tr {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    }
+
+    td.mat-cell {
+      display: flex;
+      padding: 4px 0;
+
+      &:before {
+        content: attr(data-label);
+        font-weight: bold;
+        padding-right: 8px;
+      }
+    }
+
+    th.mat-header-cell {
+      display: none;
+    }
+  }
+}
+
+.products-list {
+  .product-item {
+    @media (max-width: 768px) {
+      .product-content {
+        flex-direction: column;
+
+        .product-image {
+          width: 100%;
+          margin-bottom: 10px;
+
+          img {
+            max-width: 100%;
+            height: auto;
+          }
+        }
+
+        .product-info {
+          width: 100%;
+        }
+      }
+    }
+  }
+}

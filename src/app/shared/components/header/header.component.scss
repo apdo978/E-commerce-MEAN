@@ -1,0 +1,25 @@
+.header {
+  .nav-menu {
+    @media (max-width: 768px) {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 80%;
+      height: 100vh;
+      background: white;
+      transition: 0.3s;
+      z-index: 1000;
+      
+      &.active {
+        left: 0;
+      }
+    }
+  }
+  
+  .menu-toggle {
+    display: none;
+    @media (max-width: 768px) {
+      display: block;
+    }
+  }
+}

@@ -1,0 +1,112 @@
+<div class="profile-container">
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <div mat-card-avatar class="profile-avatar">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+      <mat-card-title>My Profile</mat-card-title>
+      <mat-card-subtitle *ngIf="user">Member since {{user.iat *1000| date }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div *ngIf="loading" class="loading-spinner">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+
+      <div *ngIf="!loading" class="profile-content">
+        <!-- View Mode -->
+        <div *ngIf="!isEditing" class="profile-info">
+          <div class="info-group">
+            <h3>Name</h3>
+            <p>{{user?.name}}</p>
+          </div>
+          <div class="info-group">
+            <h3>Email</h3>
+            <p>{{user?.email}}</p>
+          </div>
+          <div class="user-type">
+            <h3>User Type</h3>
+            <p>{{getUserTypeName(user?.userType)}}</p>
+          </div>
+        </div>
+
+        <!-- Edit Mode -->
+        <form *ngIf="isEditing" [formGroup]="profileForm" class="profile-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" placeholder="Your name">
+            <mat-error *ngIf="profileForm.get('name')?.hasError('required')">Name is required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" placeholder="Your email" type="email">
+            <mat-error *ngIf="profileForm.get('email')?.hasError('required')">Email is required</mat-error>
+            <mat-error *ngIf="profileForm.get('email')?.hasError('email')">Please enter a valid email address</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Current Password</mat-label>
+            <input matInput
+                   formControlName="password"
+                   [type]="hidePassword ? 'password' : 'text'"
+                   placeholder="Required for any changes">
+            <button mat-icon-button matSuffix 
+                    (click)="togglePasswordVisibility('password')" 
+                    [attr.aria-label]="'Hide password'" 
+                    [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="profileForm.errors?.['passwordRequired']">
+              Current password is required to make changes
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>New Password</mat-label>
+            <input matInput
+                   formControlName="newPassword"
+                   [type]="hideNewPassword ? 'password' : 'text'"
+                   placeholder="Enter new password">
+            <button mat-icon-button matSuffix 
+                    (click)="togglePasswordVisibility('newPassword')" 
+                    [attr.aria-label]="'Hide password'" 
+                    [attr.aria-pressed]="hideNewPassword">
+              <mat-icon>{{hideNewPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-hint>Leave blank to keep current password</mat-hint>
+            <mat-error *ngIf="profileForm.get('newPassword')?.hasError('minlength')">
+              Password must be at least 6 characters
+            </mat-error>
+          </mat-form-field>
+        </form>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      <button 
+        mat-button
+        *ngIf="isEditing" 
+        (click)="toggleEdit()"
+        [disabled]="loading">
+        CANCEL
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary"
+        *ngIf="!isEditing" 
+        (click)="toggleEdit()"
+        [disabled]="loading">
+        EDIT PROFILE
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary"
+        *ngIf="isEditing" 
+        (click)="saveProfile()"
+        [disabled]="profileForm.invalid || loading">
+        SAVE
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

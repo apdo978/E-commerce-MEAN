@@ -1,0 +1,60 @@
+<div class="cart-container">
+  <div class="cart-header">
+    <h1>Shopping Cart</h1>
+    <button mat-button color="warn" (click)="clearCart()" [disabled]="cartItems.length === 0">
+      <mat-icon>delete</mat-icon>
+      Clear Cart
+    </button>
+  </div>
+
+  <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="50"></mat-progress-spinner>
+
+  <div class="cart-content" *ngIf="!isLoading && cartItems.length > 0">
+    <div class="cart-items">
+      <app-cart-item
+        *ngFor="let item of cartItems"
+        [item]="item"
+        (quantityChange)="updateQuantity(item, $event)"
+        (remove)="removeItem(item.id)">
+      </app-cart-item>
+    </div>
+
+    <div class="cart-summary">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Order Summary</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>${{getTotalPrice() | number:'1.2-2'}}</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping</span>
+            <span>Free</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span>${{getTotalPrice() | number:'1.2-2'}}</span>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-raised-button color="primary" class="checkout-btn" (click)="proceedToCheckout()">
+            Proceed to Checkout
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="empty-cart" *ngIf="!isLoading && cartItems.length === 0">
+    <mat-icon>shopping_cart</mat-icon>
+    <h2>Your cart is empty</h2>
+    <p>Add items to your cart to proceed with checkout</p>
+    <button mat-raised-button color="primary" routerLink="/home">
+      Continue Shopping
+    </button>
+  </div>
+</div> 

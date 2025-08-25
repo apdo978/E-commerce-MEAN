@@ -1,0 +1,42 @@
+<div class="home-container">
+  <div class="filters-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search Products</mat-label>
+      <input matInput [(ngModel)]="searchQuery" (keyup)="searchProducts(searchQuery)" placeholder="Search by name or description">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="category-field">
+      <mat-label>Category</mat-label>
+      <mat-select [(ngModel)]="selectedCategory" (selectionChange)="filterByCategory($event.value)">
+        <mat-option value="">All Categories</mat-option>
+        <mat-option *ngFor="let category of categories" [value]="category">
+          {{category | titlecase}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-button color="primary" (click)="clearFilters()">
+      <mat-icon>clear</mat-icon>
+      Clear Filters
+    </button>
+  </div>
+
+  <div class="products-section">
+    <div *ngIf="isLoading" class="loading-spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!isLoading && filteredProducts.length === 0" class="no-products">
+      <mat-icon>search_off</mat-icon>
+      <p>No products found matching your criteria</p>
+    </div>
+
+    <div class="products-grid" *ngIf="!isLoading && filteredProducts.length > 0">
+      <app-product-card
+        *ngFor="let product of filteredProducts"
+        [product]="product">
+      </app-product-card>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,32 @@
+<mat-card class="product-card">
+  <img mat-card-image [src]="product.image || 'assets/images/placeholder.png'" [alt]="product.title">
+  
+  <mat-card-content>
+    <h2 class="product-title">{{product.title}}</h2>
+    <p class="product-category">{{product.category | titlecase}}</p>
+    
+    <div class="product-rating" *ngIf="product.rating">
+      <mat-icon *ngFor="let star of getRatingStars(product.rating.rate)" [class]="star">
+        {{star}}
+      </mat-icon>
+      <span class="rating-count">({{product.rating.count}})</span>
+    </div>
+
+    <p class="product-description">{{product.description | slice:0:100}}...</p>
+    
+    <div class="product-price">
+      <span class="price">${{product.price}}</span>
+      <span class="stock" *ngIf="product.qunt > 0">In Stock ({{product.qunt}})</span>
+      <span class="out-of-stock" *ngIf="product.qunt <= 0">Out of Stock</span>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" class="add-to-cart-btn" 
+            (click)="addToCart()" 
+            [disabled]="product.qunt <= 0">
+      <mat-icon>shopping_cart</mat-icon>
+      Add to Cart
+    </button>
+  </mat-card-actions>
+</mat-card> 

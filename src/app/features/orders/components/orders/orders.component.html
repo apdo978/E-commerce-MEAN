@@ -1,0 +1,54 @@
+<div class="orders-container">
+  <h2>My Orders History</h2>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div class="orders-list" *ngIf="!loading && orders && orders.length > 0">
+    <mat-card *ngFor="let order of orders" class="order-card">
+      <mat-card-header>
+        <mat-card-title>
+          Order Date: {{order.createdAt | date:'medium'}}
+        </mat-card-title>
+        <mat-card-subtitle>
+          Status: {{order.status}}
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="products-list">
+          <div *ngFor="let product of order.products" class="product-item">
+            <img [src]="product.image" [alt]="product.title" class="product-image">
+            <div class="product-details">
+              <h3>{{product.title}}</h3>
+              <p class="price">Price: ${{product.price}}</p>
+              <p class="quantity">Quantity: {{product.quantity}}</p>
+              <p class="subtotal">Subtotal: ${{product.price * product.quantity | number:'1.2-2'}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="order-total">
+          <strong>Order Total: ${{calculateOrderTotal(order.products) | number:'1.2-2'}}</strong>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && (!orders || orders.length === 0)">
+    <mat-icon>shopping_cart</mat-icon>
+    <h3>No Orders Found</h3>
+    <p>You haven't placed any orders yet</p>
+    <button mat-raised-button color="primary" routerLink="/products">
+      Start Shopping
+    </button>
+  </div>
+
+  <div class="error-state" *ngIf="error">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <p>{{error}}</p>
+    <button mat-button color="primary" (click)="ngOnInit()">
+      Try Again
+    </button>
+  </div>
+</div>

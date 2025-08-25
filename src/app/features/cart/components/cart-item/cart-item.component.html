@@ -1,0 +1,27 @@
+<mat-card class="cart-item">
+  <div class="item-content">
+    <div class="item-image">
+      <img [src]="item.image" [alt]="item.title" />
+    </div>
+    <div class="item-details">
+      <h3>{{ item.title }}</h3>
+      <p class="price">${{ item.price | number:'1.2-2' }}</p>
+      
+      <div class="quantity-controls">
+        <button mat-icon-button (click)="decreaseQuantity()" [disabled]="item.quantity <= 1">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <span class="quantity">{{ item.quantity }}</span>
+        <button mat-icon-button (click)="increaseQuantity()">
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+
+      <p class="subtotal">Subtotal: ${{ item.price * item.quantity | number:'1.2-2' }}</p>
+    </div>
+    
+    <button mat-icon-button color="warn" class="remove-button" (click)="removeItem()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</mat-card> 

@@ -1,0 +1,87 @@
+<!-- Header -->
+<header class="header">
+  <nav class="nav">
+    <div class="nav-brand">
+      <a href="https://apdo978.github.io/Abdelrhman/" target="_blank">Abdelrhman.Dev</a>
+    </div>
+    
+    <div class="nav-links" [class.mobile-menu-open]="isMenuOpen">
+      <a routerLink="/home" 
+         routerLinkActive="active">Home</a>
+      
+      <a routerLink="/cart" 
+         routerLinkActive="active" 
+         class="cart-link">
+        <mat-icon [matBadge]="cartItemsCount" 
+                  [matBadgeHidden]="cartItemsCount === 0" 
+                  matBadgeColor="warn">shopping_cart</mat-icon>
+        Cart
+      </a>
+
+      <!-- Orders Button -->
+      <a routerLink="/orders" 
+         routerLinkActive="active"
+         class="orders-link"
+         *ngIf="isLoggedIn">
+        <mat-icon>receipt</mat-icon>
+        Orders
+      </a>
+      
+      <a routerLink="/auth/login" 
+         routerLinkActive="active" 
+         *ngIf="!isLoggedIn">Login</a>
+      
+      <a routerLink="/auth/register" 
+         routerLinkActive="active" 
+         *ngIf="!isLoggedIn">Register</a>
+      
+      <div class="user-profile" *ngIf="isLoggedIn">
+        <a routerLink="/admin" 
+           routerLinkActive="active" 
+           class="icon-link" 
+           *ngIf="authService.isAdmin()">
+          <span class="icon-wrapper">
+            <mat-icon>dashboard</mat-icon>
+          </span>
+        </a>
+        
+        <a routerLink="/profile" 
+           routerLinkActive="active" 
+           class="user-icon-wrapper">
+          <span class="user-icon">
+            <!-- <img [src]="imgSrc" alt="nooooooooo"> -->
+            <mat-icon>account_circle</mat-icon>
+          </span>
+          <span class="username">{{ username }}</span>
+        </a>
+        
+        <a (click)="logout()" class="logout-link">Logout</a>
+      </div>
+    </div>
+
+    <!-- Move toggle button here -->
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
+  </nav>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <p>&copy; 2024 eCommerce. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * The content above * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * * -->
+<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * End of Placeholder  * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
