@@ -7,6 +7,8 @@ const secret_key = process.env.JWT_SECRET
 const UsersTypess = require('../models/usertype');
 const encrypt = require('bcryptjs');
 const usertype = require('../models/usertype');
+const fs = require('fs');
+const path = require('path');
 
  const insertUser =async function (req, res,next) {
     
@@ -219,7 +221,7 @@ const verify = (req, res,next) => {
 
     jwt.verify(tokenValue, secret_key, (err, decoded) => {
         if (err) {
-            return res.status(401).send('Invalid token');
+            return res.status(401).send(err);
         }
         req.user = decoded; 
         
@@ -357,8 +359,214 @@ const updateProfile = async (req, res) => {
         });
     }
 };
+const uploadavatar = async (req, res) => {
+    try {
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({
+                status: "fail",
+                data: { message: "No avatar file provided" }
+            });
+        }
 
-module.exports = { insertUser, getAllUsers, EditUsers, loginUser, verify, isAdmin, updateProfile}
+        const { email } = req.user;
+
+        // Find user by email
+        const user = await Users.findOne({ email });
+        if (!user) {
+            // Delete the uploaded file since user doesn't exist
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "User not found" }
+            });
+        }
+
+        // Delete old avatar file if exists
+        if (user.avatar) {
+            const oldAvatarPath = path.join(__dirname, '../avatars', user.avatar);
+            fs.unlink(oldAvatarPath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                    console.error('Error deleting old avatar:', err);
+                }
+            });
+        }
+
+        // Update user with new avatar path
+        const avatarPath = req.file.filename; // Store just the filename, not the full path
+        const updatedUser = await Users.findOneAndUpdate(
+            { email },
+            { avatar: avatarPath },
+            { new: true, select: '-password' }
+        );
+
+        return res.status(200).json({
+            status: "success",
+            data: {
+                message: "Avatar uploaded successfully",
+                avatar: avatarPath,
+                avatarUrl: `/api/v1/avatars/${avatarPath}`,
+                user: {
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    avatar: updatedUser.avatar
+                }
+            }
+        });
+
+    } catch (error) {
+        // Delete the uploaded file in case of error
+        if (req.file) {
+            fs.unlink(req.file.path, (err) => {
+                if (err) console.error('Error deleting file:', err);
+            });
+        }
+        console.error('Avatar upload error:', error);
+        return res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
+};
+
+const getAvatar = async (req, res) => {
+    try {
+        const { email } = req.user;
+
+        // Find user by email
+        const user = await Users.findOne({ email }, { avatar: 1, name: 1, email: 1 });
+        if (!user) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "User not found" }
+            });
+        }
+
+        if (!user.avatar) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "No avatar found for this user" }
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            data: {
+                avatar: user.avatar,
+                avatarUrl: `/api/v1/avatars/${user.avatar}`, // Frontend can use this to construct the full URL
+                user: {
+                    name: user.name,
+                    email: user.email
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Get avatar error:', error);
+        return res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
+};
+
+const getUserAvatar = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Find user by ID
+        const user = await Users.findById(userId, { avatar: 1, name: 1 });
+        if (!user) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "User not found" }
+            });
+        }
+
+        if (!user.avatar) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "No avatar found for this user" }
+            });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            data: {
+                avatar: user.avatar,
+                avatarUrl: `/api/v1/avatars/${user.avatar}`,
+                userName: user.name
+            }
+        });
+
+    } catch (error) {
+        console.error('Get user avatar error:', error);
+        return res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
+};
+
+const deleteAvatar = async (req, res) => {
+    try {
+        const { email } = req.user;
+
+        // Find user by email
+        const user = await Users.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "User not found" }
+            });
+        }
+
+        if (!user.avatar) {
+            return res.status(404).json({
+                status: "fail",
+                data: { message: "No avatar found for this user" }
+            });
+        }
+
+        // Delete the avatar file from filesystem
+        const avatarPath = path.join(__dirname, '../avatars', user.avatar);
+        fs.unlink(avatarPath, (err) => {
+            if (err && err.code !== 'ENOENT') {
+                console.error('Error deleting avatar file:', err);
+            }
+        });
+
+        // Remove avatar from user document
+        const updatedUser = await Users.findOneAndUpdate(
+            { email },
+            { $unset: { avatar: 1 } },
+            { new: true, select: '-password' }
+        );
+
+        return res.status(200).json({
+            status: "success",
+            data: {
+                message: "Avatar deleted successfully",
+                user: {
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    avatar: null
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Delete avatar error:', error);
+        return res.status(500).json({
+            status: "error",
+            message: error.message
+        });
+    }
+};
+
+module.exports = { insertUser, getAllUsers, EditUsers, loginUser, verify, isAdmin, updateProfile, uploadavatar, getAvatar, getUserAvatar, deleteAvatar}
 /*{
             status: "success", data: {
                 data: `New User Has Been Created Succfully ${newUser.name}` } } */

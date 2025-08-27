@@ -9,7 +9,7 @@ const routes = express.Router()
 require('dotenv').config({ path: "app.env" })
 const jwt = require('jsonwebtoken')
 const rateLimit = require('express-rate-limit');
-const upload = require('./Mvc/Controllers/multers.js');
+const upload = require('./Mvc/Controllers/multers.js').upload;
 const usertyperoute = require('./Mvc/routs/userTypesroutes');
 const cors = require('cors')
 const orders = require('./Mvc/routs/adminrouts.js')
@@ -61,43 +61,27 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // File upload handling
-const uploadsDir = path.join(__dirname, "Mvc/assets");
-app.get(`${API_PREFIX}/uploads`, (req, res) => {
-    fs.readdir(uploadsDir, (err, files) => {
-        if (err) {
-            return res.status(500).json({
-                status: 'error',
-                message: "Error reading directory"
-            });
-        }
+// const uploadsDir = path.join(__dirname, "Mvc/assets");
+// app.get(`${API_PREFIX}/uploads`, (req, res) => {
+//     fs.readdir(uploadsDir, (err, files) => {
+//         if (err) {
+//             return res.status(500).json({
+//                 status: 'error',
+//                 message: "Error reading directory"
+//             });
+//         }
 
-        const filesList = files.map(file => ({
-            name: file,
-            url: `${API_PREFIX}/uploads/${file}`
-        }));
+//         const filesList = files.map(file => ({
+//             name: file,
+//             url: `${API_PREFIX}/uploads/${file}`
+//         }));
 
-        res.json({
-            status: 'success',
-            data: filesList
-        });
-    });
-});
-
-// Database connection
-connectDB();
-
-app.use(session(config.session));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-// API Routes
-app.use(`${API_PREFIX}/users`, Userroute);
-app.use(`${API_PREFIX}/admins`, orders);
-app.use(`${API_PREFIX}/products`, productroute);
-app.use(`${API_PREFIX}/cart`, cartRoutes);
-app.use(`${API_PREFIX}/user-types`, usertyperoute);
-app.use(`${API_PREFIX}/auth`, OAuthRoutes );
+//         res.json({
+//             status: 'success',
+//             data: filesList
+//         });
+//     });
+// });
 
 // File upload route
 app.post(`${API_PREFIX}/upload`, upload.array('file', 5), (req, res) => {
@@ -117,6 +101,26 @@ app.post(`${API_PREFIX}/upload`, upload.array('file', 5), (req, res) => {
 
 // Serve static files
 app.use(`${API_PREFIX}/uploads`, express.static("./Mvc/assets"));
+app.use(`${API_PREFIX}/avatars`, express.static("./Mvc/avatars"));
+
+
+// Database connection
+connectDB();
+
+app.use(session(config.session));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+// API Routes
+app.use(`${API_PREFIX}/users`, Userroute);
+app.use(`${API_PREFIX}/admins`, orders);
+app.use(`${API_PREFIX}/products`, productroute);
+app.use(`${API_PREFIX}/cart`, cartRoutes);
+app.use(`${API_PREFIX}/user-types`, usertyperoute);
+app.use(`${API_PREFIX}/auth`, OAuthRoutes );
+
+
 
 // Health check route
 app.get(`${API_PREFIX}/health`, (req, res) => {
