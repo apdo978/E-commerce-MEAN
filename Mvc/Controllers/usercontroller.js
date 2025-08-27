@@ -33,7 +33,7 @@ const path = require('path');
 
 const getAllUsers =async (req, res) => {
     try {
-        const users = await Users.find({}, { _id: false, __v: false, createdAt: false, updatedAt: false }).populate('name')
+        const users = await Users.find({}, { _id: false, __v: false, googleId: false, password: false, createdAt: false, updatedAt: false }).populate('name')
         res.status(200).json({
             "status": "success",
             "data": {
