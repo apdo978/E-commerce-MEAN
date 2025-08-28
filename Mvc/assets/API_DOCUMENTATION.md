@@ -7,13 +7,9 @@ This is a comprehensive RESTful API built with the MEAN stack (MongoDB, Express.
 ## Base URL
 
 ```
-https://[your-domain]/api/v1
+https://e-commerce-mean-production.up.railway.app/api/v1
 ```
 
-For local development:
-```
-http://localhost:3000/api/v1
-```
 
 ## Authentication
 
@@ -638,10 +634,7 @@ function Checkout({ cart }) {
 
 1. **Authentication**: Always include the JWT token for authenticated routes
 2. **File Uploads**: Be aware of file size limits (5MB for avatars, 10MB for general files)
-3. **CORS**: The API allows requests from specific origins:
-   - https://apdo978.github.io
-   - https://abdelrhman-dev.me
-   - http://localhost:4200
+3. **CORS**: The API allows requests from All originsBecause it is an OpenSorceProject
 
 ## Rate Limiting
 
@@ -655,4 +648,4 @@ For testing API endpoints, you can use the provided test files like `avatar-test
 
 ## Contact Information
 
-For API support or questions, please contact the development team.
+For API support or questions, please contact the talktoboda01@gmail.com.
