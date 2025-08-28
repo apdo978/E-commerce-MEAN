@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>E-commerce MEAN Stack API Documentation</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="e-commerce-mean-stack-api-documentation">E-commerce MEAN Stack API Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This is a comprehensive RESTful API built with the MEAN stack (MongoDB, Express.js, Angular, Node.js) for e-commerce applications. The API provides functionality for user management, product management, shopping cart operations, order processing, and file uploads including user avatars.</p>
+<h2 id="base-url">Base URL</h2>
+<pre><code>https://e-commerce-mean-production.up.railway.app/api/v1
+</code></pre>
+<h2 id="authentication">Authentication</h2>
+<h3 id="authentication-methods">Authentication Methods</h3>
+<p>The API supports two authentication methods:</p>
+<ol>
+<li>
+<p><strong>JWT Token Authentication</strong></p>
+<ul>
+<li>Used for regular email/password login</li>
+<li>Tokens must be included in the <code>Authorization</code> header as <code>Bearer [token]</code></li>
+</ul>
+</li>
+<li>
+<p><strong>OAuth Authentication (Google)</strong></p>
+<ul>
+<li>Login with Google account</li>
+<li>Redirects to Google and returns with user data</li>
+</ul>
+</li>
+</ol>
+<h3 id="login-endpoints">Login Endpoints</h3>
+<h4 id="emailpassword-login">Email/Password Login</h4>
+<p><strong>POST</strong> <code>/users/login</code></p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;securepassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success1&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;</span> <span class="hljs-comment">// JWT token</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h4 id="google-oauth-login">Google OAuth Login</h4>
+<p><strong>GET</strong> <code>/auth/google</code></p>
+<p>Redirects to Google for authentication.</p>
+<p><strong>GET</strong> <code>/auth/google/callback</code></p>
+<p>Google redirects back to this endpoint after authentication.</p>
+<h2 id="user-management">User Management</h2>
+<h3 id="create-user">Create User</h3>
+<p><strong>POST</strong> <code>/users/InsertUserS</code></p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;john@example.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;securepassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (201):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;New User Has Been Created Succfully John Doe&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="get-all-users-admin-only">Get All Users (Admin only)</h3>
+<p><strong>GET</strong> <code>/users/GetAllUserS</code></p>
+<p><strong>Authorization:</strong> Required (Admin)</p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-punctuation">{</span>
+        <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+        <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;john@example.com&quot;</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-comment">// More users...</span>
+    <span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="edit-user-admin-only">Edit User (Admin only)</h3>
+<p><strong>PATCH</strong> <code>/users/EditUsers</code></p>
+<p><strong>Authorization:</strong> Required (Admin)</p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;user@example.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;currentPassword&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;newemail&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;newuser@example.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;newPAsswaord&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;newPassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (202):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;User user@example.com Has Been Updated Succfully to newuser@example.com&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="update-profile">Update Profile</h3>
+<p><strong>PATCH</strong> <code>/users/profile</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;New Name&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;newemail@example.com&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;password&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;currentPassword&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;newPassword&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;newSecurePassword&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;New Name&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;newemail@example.com&quot;</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;token&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...&quot;</span> <span class="hljs-comment">// New JWT token</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="avatar-management">Avatar Management</h2>
+<h3 id="upload-avatar">Upload Avatar</h3>
+<p><strong>POST</strong> <code>/users/avatar</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+<p><strong>Request Body:</strong></p>
+<ul>
+<li><code>avatar</code> (file): Image file (JPEG, PNG, GIF, WebP, max 5MB)</li>
+</ul>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Avatar uploaded successfully&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatarUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/v1/avatars/1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;john@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;avatar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1640001564164-profile.jpg&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="get-current-users-avatar">Get Current User's Avatar</h3>
+<p><strong>GET</strong> <code>/users/avatar</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;avatar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatarUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/v1/avatars/1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;john@example.com&quot;</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="get-user-avatar-by-id-public">Get User Avatar by ID (Public)</h3>
+<p><strong>GET</strong> <code>/users/avatar/:userId</code></p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;avatar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;avatarUrl&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;/api/v1/avatars/1640001564164-profile.jpg&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;userName&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="delete-avatar">Delete Avatar</h3>
+<p><strong>DELETE</strong> <code>/users/avatar</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Avatar deleted successfully&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;user&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;John Doe&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;email&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;john@example.com&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;avatar&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-keyword">null</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="product-management">Product Management</h2>
+<h3 id="get-all-products">Get All Products</h3>
+<p><strong>GET</strong> <code>/products/getAllProducts</code></p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+      <span class="hljs-punctuation">{</span>
+        <span class="hljs-comment">// Product data</span>
+      <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-comment">// More products...</span>
+    <span class="hljs-punctuation">]</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="insert-product-admin-only">Insert Product (Admin only)</h3>
+<p><strong>POST</strong> <code>/products/insertProduct</code></p>
+<p><strong>Authorization:</strong> Required (Admin)</p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;name&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Product Name&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;description&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Product Description&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;price&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">99.99</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;quantity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">100</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;category&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;categoryId&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;images&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span><span class="hljs-string">&quot;image1.jpg&quot;</span><span class="hljs-punctuation">,</span> <span class="hljs-string">&quot;image2.jpg&quot;</span><span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (201):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;New Product Has Been Created Successfully&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="create-order">Create Order</h3>
+<p><strong>POST</strong> <code>/products/order</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;products&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;productId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;product_id_1&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;quantity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">2</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;productId&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;product_id_2&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;quantity&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">1</span>
+    <span class="hljs-punctuation">}</span>
+  <span class="hljs-punctuation">]</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;shippingAddress&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;street&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;123 Main St&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;city&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Anytown&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;state&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;ST&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;zipCode&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;12345&quot;</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-attr">&quot;country&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Country&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (201):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-comment">// Order data</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="update-order-status">Update Order Status</h3>
+<p><strong>PATCH</strong> <code>/products/order/:orderId</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Request Body:</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;shipped&quot;</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-comment">// Updated order data</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="get-last-orders">Get Last Orders</h3>
+<p><strong>GET</strong> <code>/products/lastOrders</code></p>
+<p><strong>Authorization:</strong> Required</p>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-comment">// Order data</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-comment">// More orders...</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="file-upload">File Upload</h2>
+<h3 id="upload-files">Upload Files</h3>
+<p><strong>POST</strong> <code>/upload</code></p>
+<p><strong>Content-Type:</strong> <code>multipart/form-data</code></p>
+<p><strong>Request Body:</strong></p>
+<ul>
+<li><code>file</code> (files): Up to 5 files (10MB max per file)</li>
+</ul>
+<p><strong>Response (200):</strong></p>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Files uploaded successfully&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;files&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">[</span>
+    <span class="hljs-punctuation">{</span>
+      <span class="hljs-attr">&quot;fieldname&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;file&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;originalname&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image.jpg&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;encoding&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;7bit&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;mimetype&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;image/jpeg&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;destination&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;./Mvc/assets&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;filename&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;1640001564164-image.jpg&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;path&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Mvc/assets/1640001564164-image.jpg&quot;</span><span class="hljs-punctuation">,</span>
+      <span class="hljs-attr">&quot;size&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-number">12345</span>
+    <span class="hljs-punctuation">}</span><span class="hljs-punctuation">,</span>
+    <span class="hljs-comment">// More files...</span>
+  <span class="hljs-punctuation">]</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="api-response-format">API Response Format</h2>
+<p>The API follows a consistent response format:</p>
+<h3 id="success-response">Success Response</h3>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;success&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-comment">// Relevant data</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h3 id="error-response">Error Response</h3>
+<pre><code class="language-json"><span class="hljs-punctuation">{</span>
+  <span class="hljs-attr">&quot;status&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;fail&quot;</span> | <span class="hljs-string">&quot;error&quot;</span><span class="hljs-punctuation">,</span>
+  <span class="hljs-attr">&quot;data&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-punctuation">{</span>
+    <span class="hljs-attr">&quot;message&quot;</span><span class="hljs-punctuation">:</span> <span class="hljs-string">&quot;Error description&quot;</span>
+  <span class="hljs-punctuation">}</span>
+<span class="hljs-punctuation">}</span>
+</code></pre>
+<h2 id="status-codes">Status Codes</h2>
+<ul>
+<li><code>200 OK</code>: Request succeeded</li>
+<li><code>201 Created</code>: Resource created successfully</li>
+<li><code>202 Accepted</code>: Request accepted for processing</li>
+<li><code>400 Bad Request</code>: Invalid request (e.g., validation errors)</li>
+<li><code>401 Unauthorized</code>: Authentication required</li>
+<li><code>403 Forbidden</code>: Permission denied</li>
+<li><code>404 Not Found</code>: Resource not found</li>
+<li><code>413 Payload Too Large</code>: Request entity too large</li>
+<li><code>500 Internal Server Error</code>: Server-side error</li>
+</ul>
+<h2 id="frontend-integration">Frontend Integration</h2>
+<h3 id="authentication-flow">Authentication Flow</h3>
+<ol>
+<li>
+<p><strong>Registration:</strong></p>
+<ul>
+<li>Send POST request to <code>/users/InsertUserS</code></li>
+<li>Store returned confirmation message</li>
+</ul>
+</li>
+<li>
+<p><strong>Login:</strong></p>
+<ul>
+<li>Send POST request to <code>/users/login</code></li>
+<li>Store JWT token in localStorage or secure cookie</li>
+<li>Include token in subsequent requests</li>
+</ul>
+</li>
+<li>
+<p><strong>OAuth Login:</strong></p>
+<ul>
+<li>Redirect user to <code>/auth/google</code></li>
+<li>Handle the redirect back from Google</li>
+<li>Store JWT token from the response</li>
+</ul>
+</li>
+<li>
+<p><strong>Authenticated Requests:</strong></p>
+<ul>
+<li>Include JWT token in the Authorization header: <code>Authorization: Bearer [token]</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="avatar-upload-example-react">Avatar Upload Example (React)</h3>
+<pre><code class="language-jsx"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">AvatarUpload</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [file, setFile] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> [avatarUrl, setAvatarUrl] = <span class="hljs-title function_">useState</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+  <span class="hljs-keyword">const</span> [error, setError] = <span class="hljs-title function_">useState</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleUpload</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params">e</span>) =&gt; {
+    e.<span class="hljs-title function_">preventDefault</span>();
+    <span class="hljs-keyword">if</span> (!file) <span class="hljs-keyword">return</span>;
+    
+    <span class="hljs-keyword">const</span> token = <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&#x27;token&#x27;</span>);
+    <span class="hljs-keyword">const</span> formData = <span class="hljs-keyword">new</span> <span class="hljs-title class_">FormData</span>();
+    formData.<span class="hljs-title function_">append</span>(<span class="hljs-string">&#x27;avatar&#x27;</span>, file);
+    
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> axios.<span class="hljs-title function_">post</span>(<span class="hljs-string">&#x27;/api/v1/users/avatar&#x27;</span>, formData, {
+        <span class="hljs-attr">headers</span>: {
+          <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span>,
+          <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;multipart/form-data&#x27;</span>
+        }
+      });
+      
+      <span class="hljs-keyword">if</span> (response.<span class="hljs-property">data</span>.<span class="hljs-property">status</span> === <span class="hljs-string">&#x27;success&#x27;</span>) {
+        <span class="hljs-title function_">setAvatarUrl</span>(response.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">avatarUrl</span>);
+      }
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-title function_">setError</span>(error.<span class="hljs-property">response</span>?.<span class="hljs-property">data</span>?.<span class="hljs-property">data</span>?.<span class="hljs-property">message</span> || <span class="hljs-string">&#x27;Upload failed&#x27;</span>);
+    }
+  };
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">onSubmit</span>=<span class="hljs-string">{handleUpload}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> 
+          <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> 
+          <span class="hljs-attr">accept</span>=<span class="hljs-string">&quot;image/jpeg,image/png,image/gif,image/webp&quot;</span>
+          <span class="hljs-attr">onChange</span>=<span class="hljs-string">{(e)</span> =&gt;</span> setFile(e.target.files[0])}
+        /&gt;
+        <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span>&gt;</span>Upload Avatar<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span>
+      
+      {error &amp;&amp; <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;error&quot;</span>&gt;</span>{error}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>}
+      
+      {avatarUrl &amp;&amp; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">img</span> 
+          <span class="hljs-attr">src</span>=<span class="hljs-string">{</span>`<span class="hljs-attr">http:</span>//<span class="hljs-attr">localhost:3000</span>${<span class="hljs-attr">avatarUrl</span>}`} 
+          <span class="hljs-attr">alt</span>=<span class="hljs-string">&quot;Avatar&quot;</span> 
+          <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;avatar-preview&quot;</span>
+        /&gt;</span>
+      )}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">AvatarUpload</span>;
+</code></pre>
+<h3 id="product-listing-example-react">Product Listing Example (React)</h3>
+<pre><code class="language-jsx"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useEffect, useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">ProductList</span>(<span class="hljs-params"></span>) {
+  <span class="hljs-keyword">const</span> [products, setProducts] = <span class="hljs-title function_">useState</span>([]);
+  <span class="hljs-keyword">const</span> [loading, setLoading] = <span class="hljs-title function_">useState</span>(<span class="hljs-literal">true</span>);
+  <span class="hljs-keyword">const</span> [error, setError] = <span class="hljs-title function_">useState</span>(<span class="hljs-string">&#x27;&#x27;</span>);
+  
+  <span class="hljs-title function_">useEffect</span>(<span class="hljs-function">() =&gt;</span> {
+    <span class="hljs-keyword">const</span> <span class="hljs-title function_">fetchProducts</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> axios.<span class="hljs-title function_">get</span>(<span class="hljs-string">&#x27;/api/v1/products/getAllProducts&#x27;</span>);
+        <span class="hljs-keyword">if</span> (response.<span class="hljs-property">data</span>.<span class="hljs-property">status</span> === <span class="hljs-string">&#x27;success&#x27;</span>) {
+          <span class="hljs-title function_">setProducts</span>(response.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>.<span class="hljs-property">data</span>);
+        }
+        <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      } <span class="hljs-keyword">catch</span> (error) {
+        <span class="hljs-title function_">setError</span>(<span class="hljs-string">&#x27;Failed to load products&#x27;</span>);
+        <span class="hljs-title function_">setLoading</span>(<span class="hljs-literal">false</span>);
+      }
+    };
+    
+    <span class="hljs-title function_">fetchProducts</span>();
+  }, []);
+  
+  <span class="hljs-keyword">if</span> (loading) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>Loading...<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  <span class="hljs-keyword">if</span> (error) <span class="hljs-keyword">return</span> <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>{error}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>;
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;product-grid&quot;</span>&gt;</span>
+      {products.map(product =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{product._id}</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;product-card&quot;</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">img</span> 
+            <span class="hljs-attr">src</span>=<span class="hljs-string">{</span>`/<span class="hljs-attr">api</span>/<span class="hljs-attr">v1</span>/<span class="hljs-attr">uploads</span>/${<span class="hljs-attr">product.images</span>[<span class="hljs-attr">0</span>]}`} 
+            <span class="hljs-attr">alt</span>=<span class="hljs-string">{product.name}</span> 
+          /&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">h3</span>&gt;</span>{product.name}<span class="hljs-tag">&lt;/<span class="hljs-name">h3</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>{product.description}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">p</span> <span class="hljs-attr">className</span>=<span class="hljs-string">&quot;price&quot;</span>&gt;</span>${product.price.toFixed(2)}<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+          <span class="hljs-tag">&lt;<span class="hljs-name">button</span>&gt;</span>Add to Cart<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+}
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-title class_">ProductList</span>;
+</code></pre>
+<h3 id="shopping-cart-example-react">Shopping Cart Example (React)</h3>
+<pre><code class="language-jsx"><span class="hljs-keyword">import</span> <span class="hljs-title class_">React</span>, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;react&#x27;</span>;
+<span class="hljs-keyword">import</span> axios <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;axios&#x27;</span>;
+
+<span class="hljs-keyword">function</span> <span class="hljs-title function_">Checkout</span>(<span class="hljs-params">{ cart }</span>) {
+  <span class="hljs-keyword">const</span> [address, setAddress] = <span class="hljs-title function_">useState</span>({
+    <span class="hljs-attr">street</span>: <span class="hljs-string">&#x27;&#x27;</span>,
+    <span class="hljs-attr">city</span>: <span class="hljs-string">&#x27;&#x27;</span>,
+    <span class="hljs-attr">state</span>: <span class="hljs-string">&#x27;&#x27;</span>,
+    <span class="hljs-attr">zipCode</span>: <span class="hljs-string">&#x27;&#x27;</span>,
+    <span class="hljs-attr">country</span>: <span class="hljs-string">&#x27;&#x27;</span>
+  });
+  
+  <span class="hljs-keyword">const</span> <span class="hljs-title function_">handleCheckout</span> = <span class="hljs-keyword">async</span> (<span class="hljs-params"></span>) =&gt; {
+    <span class="hljs-keyword">const</span> token = <span class="hljs-variable language_">localStorage</span>.<span class="hljs-title function_">getItem</span>(<span class="hljs-string">&#x27;token&#x27;</span>);
+    
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">const</span> orderData = {
+        <span class="hljs-attr">products</span>: cart.<span class="hljs-title function_">map</span>(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> ({
+          <span class="hljs-attr">productId</span>: item.<span class="hljs-property">id</span>,
+          <span class="hljs-attr">quantity</span>: item.<span class="hljs-property">quantity</span>
+        })),
+        <span class="hljs-attr">shippingAddress</span>: address
+      };
+      
+      <span class="hljs-keyword">const</span> response = <span class="hljs-keyword">await</span> axios.<span class="hljs-title function_">post</span>(<span class="hljs-string">&#x27;/api/v1/products/order&#x27;</span>, orderData, {
+        <span class="hljs-attr">headers</span>: {
+          <span class="hljs-string">&#x27;Authorization&#x27;</span>: <span class="hljs-string">`Bearer <span class="hljs-subst">${token}</span>`</span>
+        }
+      });
+      
+      <span class="hljs-keyword">if</span> (response.<span class="hljs-property">data</span>.<span class="hljs-property">status</span> === <span class="hljs-string">&#x27;success&#x27;</span>) {
+        <span class="hljs-comment">// Order placed successfully</span>
+        <span class="hljs-comment">// Redirect to order confirmation page</span>
+      }
+    } <span class="hljs-keyword">catch</span> (error) {
+      <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">error</span>(<span class="hljs-string">&#x27;Checkout failed:&#x27;</span>, error);
+    }
+  };
+  
+  <span class="hljs-comment">// Address form and checkout button UI</span>
+}
+</code></pre>
+<h2 id="security-considerations">Security Considerations</h2>
+<ol>
+<li><strong>Authentication</strong>: Always include the JWT token for authenticated routes</li>
+<li><strong>File Uploads</strong>: Be aware of file size limits (5MB for avatars, 10MB for general files)</li>
+<li><strong>CORS</strong>: The API allows requests from All originsBecause it is an OpenSorceProject</li>
+</ol>
+<h2 id="rate-limiting">Rate Limiting</h2>
+<p>The API implements rate limiting:</p>
+<ul>
+<li>100 requests per 15 minutes per IP address</li>
+<li>After limit is reached, requests will be blocked with a 429 status code</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<p>For testing API endpoints, you can use the provided test files like <code>avatar-test.js</code> or tools like Postman or curl.</p>
+<h2 id="contact-information">Contact Information</h2>
+<p>For API support or questions, please contact the <a href="mailto:talktoboda01@gmail.com">talktoboda01@gmail.com</a>.</p>
+
+            <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+            
+        </body>
+        </html>
